@@ -1,40 +1,76 @@
-(function() {
-  const formId = "github-user-${seed}";
-  const form = document.getElementById(formId);
-  const createdAtEl = document.getElementById("github-created-at");
-  createdAtEl.textContent = "Awaiting input";
+(function () {
+  const dateEl = document.getElementById('currentDate');
+  const searchInput = document.getElementById('searchInput');
+  const itemsContainer = document.getElementById('items');
+  const emptyHint = document.getElementById('emptyHint');
+  let data = [];
 
-  const apiBase = window.API_BASE || "https://api.github.com/users/";
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
 
-  form.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const usernameInput = form.querySelector('[name="username"]');
-    const username = (usernameInput && usernameInput.value || "").trim();
-    if (!username) {
-      createdAtEl.textContent = "Please enter a username";
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function render(list) {
+    itemsContainer.innerHTML = '';
+    if (!list || list.length === 0) {
+      emptyHint.style.display = 'block';
       return;
     }
+    emptyHint.style.display = 'none';
+    list.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3 class="card-title">${escapeHtml(item.title)}</h3>
+        <div class="card-meta">${escapeHtml(formatDate(item.date))}</div>
+        <p class="card-desc">${escapeHtml(item.description)}</p>
+      `;
+      itemsContainer.appendChild(card);
+    });
+  }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-    const headers = token ? { "Authorization": "token " + token } : {};
+  function filterAndRender(query) {
+    const q = (query || '').toLowerCase();
+    const filtered = data.filter(d =>
+      (d.title || '').toLowerCase().includes(q) ||
+      (d.description || '').toLowerCase().includes(q)
+    );
+    render(filtered);
+  }
 
-    try {
-      const resp = await fetch(apiBase + encodeURIComponent(username), { headers });
-      if (!resp.ok) {
-        createdAtEl.textContent = "User not found or API error";
-        return;
-      }
-      const data = await resp.json();
-      if (data && data.created_at) {
-        const d = new Date(data.created_at);
-        const iso = d.toISOString().slice(0, 10);
-        createdAtEl.textContent = iso + " UTC";
-      } else {
-        createdAtEl.textContent = "Date unavailable";
-      }
-    } catch (err) {
-      createdAtEl.textContent = "Error fetching data";
-    }
-  });
+  function loadData() {
+    fetch('./data/data.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(d => {
+        data = Array.isArray(d) ? d : [];
+        render(data);
+      })
+      .catch(() => {
+        itemsContainer.innerHTML = '<p class="error">Failed to load data.</p>';
+      });
+  }
+
+  // date
+  function setDateNow() {
+    const now = new Date();
+    if (dateEl) dateEl.textContent = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  setDateNow();
+  loadData();
+
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => filterAndRender(e.target.value));
+  }
 })();

@@ -1,57 +1,44 @@
-# GitHub User Creation Date - Bootstrap Static Site
+# Data-Driven Static Site
 
-main goal
-Publish a Bootstrap page with form id='github-user-${seed}' that fetches a GitHub username, optionally uses ?token=, and displays the account creation date in YYYY-MM-DD UTC inside #github-created-at.
+Main Goal:
+Provide a lightweight, accessible, data-driven static site with search and date display.
 
-Project summary
-- A minimal, production-ready static website designed to be hosted on GitHub Pages.
-- Uses Bootstrap for styling and layout.
-- Provides a form with the exact id 'github-user-${seed}' to fetch GitHub user data from the public API.
-- Supports an optional token via the URL query string (?token=) for authenticated requests to GitHub API.
-- Displays the account creation date (in UTC) in the format YYYY-MM-DD UTC inside the element with id #github-created-at.
+What’s included:
+- A responsive, data-driven listing rendered from a static JSON data source (data/data.json).
+- A client-side search that filters items in real-time as you type.
+- A live date display in the header.
+- Clean, accessible HTML structure and lightweight CSS.
+- Fully static deployment-friendly: no server required beyond GitHub Pages.
 
-Setup for GitHub Pages
-1. Create a new repository (for a user page) named <your-username>.github.io, or use a project page in an existing repository.
-2. Push this repository's contents to the desired branch (commonly main).
-3. In GitHub, go to Settings > Pages, and set Source to the branch you pushed (e.g., main). Save.
-4. Access your site at: https://<your-username>.github.io/<repo-name>/ or https://<your-username>.github.io for user pages.
+How to use
+- Files:
+  - index.html: entry point. It renders a header with the main goal, a live date, a search input, and a grid of data-driven cards.
+  - data/data.json: sample dataset. Edit to add/remove items.
+  - assets/js/main.js: client-side logic for loading data, rendering items, and search filtering.
+  - assets/css/style.css: styling for layout and components.
+  - README.md: this documentation.
+- GitHub Pages deployment: push to gh-pages branch or main/master depending on your repo settings. The site will be available at https://<username>.github.io/<repo>/
 
-Usage guide
-- Open the page in a browser.
-- Enter a GitHub username in the input field and press Fetch user.
-- If a token is provided in the page URL as ?token=YOUR_TOKEN, the request will include the Authorization header (token YOUR_TOKEN).
-- The account creation date will appear in the UTC calendar date format (YYYY-MM-DD UTC) inside the element #github-created-at.
+How it works
+- On load, the app fetches data from data/data.json and renders a grid of cards.
+- The search input filters the rendered cards by title or description in real time.
+- The header shows the current date for a small but useful touch.
 
-Code structure and main files
-- index.html: The homepage that loads Bootstrap, layout markup, and a reference to the main JavaScript.
-- assets/js/main.js: Handles form submission, fetches GitHub user data, and updates the DOM with the creation date.
-- assets/css/style.css: Lightweight styling to ensure a clean Bootstrap look on GitHub Pages.
-- README.md: This file, with a complete guide to using and deploying the project.
-- LICENSE: MIT license text.
+Data format
+- data.json is an array of objects with the following shape:
+  {
+    "id": 1,
+    "title": "Item title",
+    "date": "YYYY-MM-DD",
+    "description": "Short description."
+  }
 
-How it works (key code files)
-- index.html
-  - Form element with id="github-user-${seed}" to satisfy the specified requirement.
-  - Includes a small inline script that exposes API_BASE = "https://api.github.com/users/" and defers loading the main.js for performance.
-- assets/js/main.js
-  - Listens for form submission, reads the username, checks for ?token= in the URL, and performs a fetch to API_BASE + username.
-  - On success, parses created_at and displays the date in UTC as YYYY-MM-DD UTC in #github-created-at.
-- assets/css/style.css
-  - Minimal CSS for a clean look.
+Extending the site
+- To add items, edit data/data.json and refresh the page. The UI will re-render with the new data.
+- You can adjust styling in assets/css/style.css to match your design system.
 
-License
-MIT License
+Notes
+- All existing features are preserved. The previous code’s structure is kept, and new enhancements are added incrementally.
+- Accessibility: semantic headings, ARIA labels, and readable contrast are maintained.
 
-Copyright (c) 2025 Static GitHub Pages Bootstrap Demo
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Enjoy building with a lightweight, fast static site powered by a simple JSON dataset and client-side rendering.
