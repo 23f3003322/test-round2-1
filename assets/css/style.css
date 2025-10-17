@@ -1,0 +1,13 @@
+/* Basic styles for a clean GitHub Pages static page */
+:root {
+  --bg: #f8f9fa;
+}
+html, body {
+  height: 100%;
+}
+body {
+  background-color: var(--bg);
+}
+.container {
+  max-width: 720px;
+}
